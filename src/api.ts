@@ -3,7 +3,7 @@ export const api = {
     update(newValue: number) {
       console.log("updating");
       return new Promise<ApiResponse>((res) =>
-        window.setTimeout(() => res({ status: 200, value: newValue }), 3000)
+        window.setTimeout(() => res({ status: 200, value: newValue }), 1000)
       );
     },
   },
@@ -11,7 +11,7 @@ export const api = {
     update(newValue: number) {
       console.log("updating");
       return new Promise<ApiResponse>((res) =>
-        window.setTimeout(() => res({ status: 200, value: newValue }), 3000)
+        window.setTimeout(() => res({ status: 200, value: newValue }), 1000)
       );
     },
   },
