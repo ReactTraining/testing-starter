@@ -14,8 +14,15 @@ export const App: React.FC = () => {
       <span className="text label" id="total-minutes">
         Total Time Estimate (in minutes)
       </span>
-      <Minutes value={totalMinutes} onValueChange={setTotalMinutes}>
-        <MinutesSubtract />
+      <Minutes
+        value={totalMinutes}
+        onValueChange={(newValue) => {
+          if (completedMinutes <= newValue) {
+            setTotalMinutes(newValue);
+          }
+        }}
+      >
+        <MinutesSubtract disabled={totalMinutes === completedMinutes} />
         <MinutesInput aria-labelledby="total-minutes" />
         <MinutesAdd />
       </Minutes>
