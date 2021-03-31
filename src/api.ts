@@ -1,7 +1,7 @@
 export const api = {
   completedMinutes: {
     update(newValue: number) {
-      console.log("updating");
+      console.log("updating REAL api!");
       return new Promise<ApiResponse>((res) =>
         window.setTimeout(() => res({ status: 200, value: newValue }), 1000)
       );
@@ -9,7 +9,7 @@ export const api = {
   },
   totalMinutes: {
     update(newValue: number) {
-      console.log("updating");
+      console.log("updating REAL api!");
       return new Promise<ApiResponse>((res) =>
         window.setTimeout(() => res({ status: 200, value: newValue }), 1000)
       );
