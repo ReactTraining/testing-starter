@@ -3,21 +3,63 @@ import { Heading } from "./Heading";
 import { Minutes, MinutesSubtract, MinutesAdd, MinutesInput } from "./Minutes";
 import "./App.scss";
 import { Progress } from "./Progress";
+import { LoadingBlocker } from "./LoadingBlocker";
+import { api } from "./api";
 
 export const App: React.FC = () => {
   let [totalMinutes, setTotalMinutes] = React.useState(0);
   let [completedMinutes, setCompletedMinutes] = React.useState(0);
+  let [appState, setAppState] = React.useState<"loading" | "idle">("idle");
+
+  let mounted = React.useRef(true);
+  React.useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  async function updateCompletedMinutes(newValue: number) {
+    setAppState("loading");
+    let { value } = await api.completedMinutes.update(newValue);
+    if (mounted.current) {
+      setAppState("idle");
+      setCompletedMinutes(value);
+    }
+  }
+
+  async function updateTotalMinutes(newValue: number) {
+    setAppState("loading");
+    let { value } = await api.totalMinutes.update(newValue);
+    if (mounted.current) {
+      setAppState("idle");
+      setTotalMinutes(value);
+    }
+  }
 
   return (
     <div className="App">
+      {appState === "loading" ? <LoadingBlocker /> : null}
+
       <Heading>Task Progress</Heading>
       <span className="text label" id="total-minutes">
         Total Time Estimate (in minutes)
       </span>
-      <Minutes value={totalMinutes} onValueChange={setTotalMinutes}>
-        <MinutesSubtract />
-        <MinutesInput aria-labelledby="total-minutes" />
-        <MinutesAdd />
+      <Minutes
+        value={totalMinutes}
+        onValueChange={(newValue) => {
+          if (completedMinutes <= newValue) {
+            updateTotalMinutes(newValue);
+          }
+        }}
+      >
+        <MinutesSubtract
+          disabled={appState === "loading" || totalMinutes === completedMinutes}
+        />
+        <MinutesInput
+          aria-labelledby="total-minutes"
+          disabled={appState === "loading"}
+        />
+        <MinutesAdd disabled={appState === "loading"} />
       </Minutes>
 
       <br />
@@ -33,10 +75,10 @@ export const App: React.FC = () => {
         currentValue={completedMinutes || 0}
         onValueChange={(newValue) => {
           if (newValue <= totalMinutes) {
-            setCompletedMinutes(newValue);
+            updateCompletedMinutes(newValue);
           }
         }}
-        disabled={totalMinutes < 1}
+        disabled={appState === "loading" || totalMinutes < 1}
         status={
           totalMinutes < 1
             ? "none"
