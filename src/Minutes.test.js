@@ -49,16 +49,36 @@ describe("<Minutes />", () => {
       });
     });
 
-    it("should update when the user types a valid value", () => {
-      let { getByRole } = ReactTestingLibrary.render(
-        <MinutesWithState defaultValue={5} />
-      );
-      let input = getByRole("textbox");
+    describe("when typing a valid value into the input", () => {
+      it("should update the input", () => {
+        let { getByRole } = ReactTestingLibrary.render(
+          <MinutesWithState defaultValue={5} />
+        );
+        let input = getByRole("textbox");
 
-      userEvent.type(input, "{backspace}");
-      userEvent.type(input, "10");
+        userEvent.type(input, "{backspace}");
+        userEvent.type(input, "10");
 
-      expect(input.value).toBe(String(10));
+        expect(input.value).toBe(String(10));
+      });
+    });
+
+    describe("when typing an invalid value into the input", () => {
+      it("should NOT update the input", () => {
+        let { getByRole } = ReactTestingLibrary.render(
+          <MinutesWithState defaultValue={5} />
+        );
+        let input = getByRole("textbox");
+
+        userEvent.type(input, "{backspace}");
+        userEvent.type(input, "poop");
+
+        expect(input.value).toBe(String(0));
+
+        userEvent.type(input, "poop5 oopps");
+
+        expect(input.value).toBe(String(5));
+      });
     });
   });
 });
